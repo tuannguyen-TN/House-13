@@ -1,3 +1,4 @@
+// app/_layout.tsx
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Drawer } from 'expo-router/drawer'
 import DrawerContent from '../components/DrawerContent'
@@ -51,6 +52,16 @@ export default function RootLayout() {
             title: 'Food Combinations',
             drawerIcon: ({ color, size }) => (
               <Ionicons name="git-merge" size={size} color={color} />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="markets"
+          options={{
+            drawerLabel: 'Find Markets',
+            title: 'Local Markets',
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="storefront" size={size} color={color} />
             ),
           }}
         />

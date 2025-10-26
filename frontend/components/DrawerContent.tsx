@@ -1,3 +1,4 @@
+// components/DrawerContent.tsx
 import React from 'react'
 import { View, Text, StyleSheet, Pressable } from 'react-native'
 import { DrawerContentScrollView } from '@react-navigation/drawer'
@@ -30,6 +31,13 @@ export default function DrawerContent(props: any) {
       route: '/combination',
       gradient: ['#4facfe', '#00f2fe'],
       description: 'Analyze food combinations',
+    },
+    {
+      title: 'Find Markets',
+      icon: 'storefront',
+      route: '/markets',
+      gradient: ['#43e97b', '#38f9d7'],
+      description: 'Locate ingredients nearby',
     },
   ]
 
