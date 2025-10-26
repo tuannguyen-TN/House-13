@@ -56,7 +56,7 @@ export default function DrawerContent(props: any) {
         <View style={styles.logoContainer}>
           <Text style={styles.logoEmoji}>🍜</Text>
         </View>
-        <Text style={styles.appName}>SeasonEats</Text>
+        <Text style={styles.appName}>House 13</Text>
         <Text style={styles.tagline}>Harmony through food</Text>
       </LinearGradient>
 
@@ -99,7 +99,7 @@ export default function DrawerContent(props: any) {
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>24-Hour Hackathon Project</Text>
+        <Text style={styles.footerText}>House 13</Text>
         <Text style={styles.version}>Version 1.0.0</Text>
       </View>
     </DrawerContentScrollView>

@@ -25,7 +25,7 @@ export default function DrawerLayout() {
       <Drawer.Screen
         name="index"
         options={{
-          title: 'SeasonEats',
+          title: 'House 13',
           drawerLabel: 'Home',
           drawerIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />

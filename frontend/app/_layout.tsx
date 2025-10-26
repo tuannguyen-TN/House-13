@@ -29,7 +29,7 @@ export default function RootLayout() {
           name="index"
           options={{
             drawerLabel: 'Home',
-            title: 'SeasonEats',
+            title: 'House 13',
             drawerIcon: ({ color, size }) => (
               <Ionicons name="home" size={size} color={color} />
             ),
@@ -68,9 +68,12 @@ export default function RootLayout() {
         <Drawer.Screen
           name="season/[id]"
           options={{
-            drawerLabel: () => null,
-            drawerItemStyle: { display: 'none' },
+            drawerLabel: 'Season Details',
             title: 'Season Details',
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="leaf" size={size} color={color} />
+            ),
+            drawerItemStyle: { display: 'none' },
           }}
         />
       </Drawer>
