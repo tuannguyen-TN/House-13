@@ -10,6 +10,8 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -304,36 +306,53 @@ export default function CombinationScreen() {
 
       {/* Health Notes Modal */}
       <Modal visible={showNotesModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.notesModal}>
-            <Text style={styles.modalTitle}>Health Notes (Optional)</Text>
-            <Text style={styles.modalSubtitle}>
-              Any specific health conditions or preferences?
-            </Text>
-            <TextInput
-              style={styles.notesInput}
-              placeholder="e.g., feeling cold, weak digestion, pregnancy..."
-              placeholderTextColor="#999"
-              multiline
-              value={healthNotes}
-              onChangeText={setHealthNotes}
-            />
-            <View style={styles.modalButtons}>
-              <Pressable
-                style={[styles.modalButton, styles.skipButton]}
-                onPress={analyzeIngredients}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.modalOverlay}
+        >
+          <Pressable
+            style={styles.modalOverlay}
+            onPress={() => setShowNotesModal(false)}
+          >
+            <Pressable
+              style={styles.notesModal}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
               >
-                <Text style={styles.skipButtonText}>Skip</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.modalButton, styles.continueButton]}
-                onPress={analyzeIngredients}
-              >
-                <Text style={styles.continueButtonText}>Continue</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
+                <Text style={styles.modalTitle}>Health Notes (Optional)</Text>
+                <Text style={styles.modalSubtitle}>
+                  Any specific health conditions or preferences?
+                </Text>
+                <TextInput
+                  style={styles.notesInput}
+                  placeholder="e.g., feeling cold, weak digestion, pregnancy..."
+                  placeholderTextColor="#999"
+                  multiline
+                  value={healthNotes}
+                  onChangeText={setHealthNotes}
+                  textAlignVertical="top"
+                />
+                <View style={styles.modalButtons}>
+                  <Pressable
+                    style={[styles.modalButton, styles.skipButton]}
+                    onPress={analyzeIngredients}
+                  >
+                    <Text style={styles.skipButtonText}>Skip</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[styles.modalButton, styles.continueButton]}
+                    onPress={analyzeIngredients}
+                  >
+                    <Text style={styles.continueButtonText}>Continue</Text>
+                  </Pressable>
+                </View>
+              </ScrollView>
+            </Pressable>
+          </Pressable>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Recipe Detail Modal */}
@@ -648,6 +667,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
     padding: 25,
     paddingBottom: 35,
+    maxHeight: '80%',
   },
   modalTitle: {
     fontSize: 20,
