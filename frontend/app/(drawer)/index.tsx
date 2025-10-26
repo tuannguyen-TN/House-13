@@ -21,7 +21,6 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>13 House</Text>
           <Text style={styles.subtitle}>
             Discover foods that harmonize with each season
           </Text>
@@ -61,15 +60,8 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 8,
-    letterSpacing: -1,
+    marginTop: 10,
+    marginBottom: 20,
   },
   subtitle: {
     fontSize: 16,

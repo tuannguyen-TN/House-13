@@ -8,7 +8,6 @@ import {
   Dimensions,
 } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
-import { BlurView } from 'expo-blur'
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -77,9 +76,6 @@ export default function SeasonCard({
               <Text style={styles.emoji}>{season.emoji}</Text>
               <Text style={styles.seasonName}>{season.name}</Text>
               <Text style={styles.seasonSubtitle}>{season.subtitle}</Text>
-              {/* <View style={styles.monthsContainer}>
-                <Text style={styles.months}>{season.months}</Text>
-              </View> */}
             </View>
           </LinearGradient>
         </ImageBackground>

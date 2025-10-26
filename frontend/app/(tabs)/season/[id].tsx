@@ -1,12 +1,5 @@
 import React from 'react'
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  SafeAreaView,
-  Pressable,
-} from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Ionicons } from '@expo/vector-icons'
@@ -35,7 +28,7 @@ export default function SeasonDetailScreen() {
       <StatusBar style="light" />
       <View style={styles.header}>
         <Pressable
-          onPress={() => router.navigate('/home')}
+          onPress={() => router.navigate('/')}
           style={styles.backButton}
         >
           <Ionicons name="arrow-back" size={28} color="#fff" />
@@ -52,7 +45,6 @@ export default function SeasonDetailScreen() {
           <Text style={styles.emoji}>{season.emoji}</Text>
           <Text style={styles.seasonTitle}>{season.name}</Text>
           <Text style={styles.seasonSubtitle}>{season.subtitle}</Text>
-          {/* <Text style={styles.seasonMonths}>{season.months}</Text> */}
         </View>
 
         <View style={styles.descriptionCard}>

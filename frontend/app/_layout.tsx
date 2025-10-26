@@ -1,29 +1,68 @@
-import { Tabs } from 'expo-router'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { Drawer } from 'expo-router/drawer'
+import DrawerContent from '../components/DrawerContent'
 import { Ionicons } from '@expo/vector-icons'
 
-export default function TabLayout() {
+export default function RootLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarStyle: { display: 'none' }, // Hide tab bar for now
-        headerShown: false,
-      }}
-    >
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: 'Seasons',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="leaf" size={size} color={color} />
-          ),
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Drawer
+        drawerContent={(props) => <DrawerContent {...props} />}
+        screenOptions={{
+          drawerPosition: 'left',
+          drawerType: 'slide',
+          headerStyle: {
+            backgroundColor: '#667eea',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          drawerStyle: {
+            backgroundColor: '#f8f9fa',
+            width: 280,
+          },
         }}
-      />
-      <Tabs.Screen
-        name="season/[id]"
-        options={{
-          href: null, // Hide from tab bar
-        }}
-      />
-    </Tabs>
+      >
+        <Drawer.Screen
+          name="index"
+          options={{
+            drawerLabel: 'Home',
+            title: 'SeasonEats',
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="home" size={size} color={color} />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="scanner"
+          options={{
+            drawerLabel: 'Food Scanner',
+            title: 'Energetic Property',
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="scan" size={size} color={color} />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="combination"
+          options={{
+            drawerLabel: 'Combination Check',
+            title: 'Food Combinations',
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="git-merge" size={size} color={color} />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="season/[id]"
+          options={{
+            drawerLabel: () => null,
+            drawerItemStyle: { display: 'none' },
+            title: 'Season Details',
+          }}
+        />
+      </Drawer>
+    </GestureHandlerRootView>
   )
 }
