@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
+from google.cloud import vision
 import hashlib
 
 from models import *
@@ -8,7 +9,6 @@ from mock_data import MOCK_FOODS, SEASONAL_RECOMMENDATIONS, FOOD_COMBINATIONS, M
 
 app = FastAPI(title="Food Energy API", version="1.0.0")
 
-# CORS for Expo / frontend (for hackathon allow all)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,75 +17,40 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---------- Helpers ----------
-
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 
-
-def deterministic_identify_food_from_bytes(image_bytes: bytes) -> str:
-    """
-    Deterministic mock: hash image bytes and pick an index from MOCK_FOODS.
-    Same image => same detected food. Good for demo.
-    """
-    if not image_bytes:
-        return list(MOCK_FOODS.keys())[0]
-    h = hashlib.sha256(image_bytes).hexdigest()
-    idx = int(h[:8], 16) % len(MOCK_FOODS)
-    return list(MOCK_FOODS.keys())[idx]
-
-
-# ---------- Endpoints ----------
-
-@app.get("/api/seasons/{season_id}/foods", response_model=SeasonalFoods)
-async def get_seasonal_foods(season_id: str):
-    try:
-        season = Season(season_id.lower())
-        food_names = SEASONAL_RECOMMENDATIONS.get(season, [])
-
-        foods = []
-        for name in food_names:
-            if name in MOCK_FOODS:
-                foods.append(Food(**MOCK_FOODS[name]))
-            else:
-                foods.append(
-                    Food(
-                        id=f"temp_{name}",
-                        name=name.title(),
-                        energeticType=EnergeticType.NEUTRAL,
-                        benefits=f"Seasonal food for {season.value}",
-                        commonUses=[],
-                    )
-                )
-
-        return SeasonalFoods(season=season, foods=foods)
-    except ValueError:
-        raise HTTPException(status_code=404, detail=f"Season {season_id} not found")
-
-
-# ---------- File-upload / Identification endpoint ----------
 @app.post("/api/food/identify", response_model=FoodIdentifyResponse)
 async def identify_food(file: UploadFile = File(...)):
-    """
-    Accept an image file upload from frontend, run a deterministic mock-identification,
-    and return the energetic info.
-    """
     try:
-        # Basic validation
         if not file.content_type or not file.content_type.startswith("image/"):
-            raise HTTPException(status_code=400, detail="Uploaded file is not an image")
+            raise HTTPException(400, "Uploaded file is not an image")
 
         contents = await file.read()
-
-        if len(contents) == 0:
-            raise HTTPException(status_code=400, detail="Empty file uploaded")
-
+        if not contents:
+            raise HTTPException(400, "Empty file uploaded")
         if len(contents) > MAX_FILE_SIZE:
-            raise HTTPException(status_code=413, detail="File too large (max 5MB)")
+            raise HTTPException(413, "File too large (max 5MB)")
 
-        # Identify food (deterministic mock)
-        identified_food = deterministic_identify_food_from_bytes(contents)
+        client = vision.ImageAnnotatorClient()
+        image = vision.Image(content=contents)
+        response = client.label_detection(image=image)
+        labels = response.label_annotations
 
-        if identified_food in MOCK_FOODS:
+        food_names = set(MOCK_FOODS.keys())
+        identified_food = None
+
+        # Try to match Vision labels with known foods
+        for label in labels:
+            desc = label.description.lower()
+            if desc in food_names:
+                identified_food = desc
+                break
+
+        # If no match, pick top label or none
+        if not identified_food:
+            identified_food = labels[0].description.lower() if labels else None
+
+        if identified_food and identified_food in MOCK_FOODS:
             food_data = MOCK_FOODS[identified_food]
             relevant_recipes = [r for r in MOCK_RECIPES if identified_food in r["ingredients"]]
 
@@ -97,21 +62,22 @@ async def identify_food(file: UploadFile = File(...)):
                 recipes=relevant_recipes[:3],
             )
 
-        # Default fallback
+        # Fallback if unknown
         return FoodIdentifyResponse(
-            foodName="Unknown Food",
+            foodName=identified_food or "Unknown Food",
             energeticType=EnergeticType.NEUTRAL,
             description="Food not in database",
             benefits="Please try another image",
             recipes=[],
         )
-    
-    except HTTPException:
-        raise
+
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing image: {str(e)}")
+        raise HTTPException(500, detail=f"Error processing image: {str(e)}")
     finally:
         await file.close()
+
 
 
 @app.post("/api/combinations/analyze", response_model=CombinationAnalysisResponse)
@@ -196,8 +162,7 @@ async def get_health_conditions():
 
 @app.get("/")
 async def root():
-    return {"message": "Food Energy API is running!", "version": "1.0.0"}
-
+    return {"message": "Food Energy API running", "version": "1.0.0"}
 
 if __name__ == "__main__":
     import uvicorn
